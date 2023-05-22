@@ -1,0 +1,167 @@
+{{template "base" .}}
+
+{{define "title"}}
+    Upload files page
+{{end}}
+
+{{define "style"}}
+    <style>
+        .input {
+            width: 50%;
+            padding: 50px;
+            font-size: 25px;
+        }
+
+        .inp-label-1 {
+            color: white;
+            font-size: 35px;
+            margin-left: 250px;
+        }
+
+        .bucket-name-inp {
+            margin-left: 250px;
+            padding: 25px;
+            font-size: 20px;
+        }
+
+        .submit-button {
+            padding: 15px;
+            color: white;
+            text-decoration: none;
+            background-color: #EE4E44;
+            transition: all .3s ease-in-out;
+        }
+
+        .submit-button:hover {
+            background-color: aqua;
+            color: black;
+        }
+
+        .copyright {
+            display:block;
+            margin-top: 100px;
+            text-align: center;
+            font-family: Helvetica, Arial, sans-serif;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .copyright a{
+            text-decoration: none;
+            color: #EE4E44;
+        }
+
+        .d-none {
+            display: none;
+            margin-left: 3500px;
+        }
+
+        .file-upload{display:block;text-align:center;font-family: Helvetica, Arial, sans-serif;font-size: 12px;}
+        .file-upload .file-select{display:block;border: 2px solid #dce4ec;color: #34495e;cursor:pointer;height:40px;line-height:40px;text-align:left;background:#FFFFFF;overflow:hidden;position:relative;}
+        .file-upload .file-select .file-select-button{background:#dce4ec;padding:0 10px;display:inline-block;height:40px;line-height:40px;}
+        .file-upload .file-select .file-select-name{line-height:40px;display:inline-block;padding:0 10px;}
+        .file-upload .file-select:hover{border-color:#34495e;transition:all .2s ease-in-out;-moz-transition:all .2s ease-in-out;-webkit-transition:all .2s ease-in-out;-o-transition:all .2s ease-in-out;}
+        .file-upload .file-select:hover .file-select-button{background:#34495e;color:#FFFFFF;transition:all .2s ease-in-out;-moz-transition:all .2s ease-in-out;-webkit-transition:all .2s ease-in-out;-o-transition:all .2s ease-in-out;}
+        .file-upload.active .file-select{border-color:#3fa46a;transition:all .2s ease-in-out;-moz-transition:all .2s ease-in-out;-webkit-transition:all .2s ease-in-out;-o-transition:all .2s ease-in-out;}
+        .file-upload.active .file-select .file-select-button{background:#3fa46a;color:#FFFFFF;transition:all .2s ease-in-out;-moz-transition:all .2s ease-in-out;-webkit-transition:all .2s ease-in-out;-o-transition:all .2s ease-in-out;}
+        .file-upload .file-select input[type=file]{z-index:100;cursor:pointer;position:absolute;height:100%;width:60%;top:0;left:0;opacity:0;filter:alpha(opacity=0);}
+        .file-upload .file-select.file-select-disabled{opacity:0.65;}
+        .file-upload .file-select.file-select-disabled:hover{cursor:default;display:block;border: 2px solid #dce4ec;color: #34495e;cursor:pointer;height:40px;line-height:40px;margin-top:5px;text-align:left;background:#FFFFFF;overflow:hidden;position:relative;}
+        .file-upload .file-select.file-select-disabled:hover .file-select-button{background:#dce4ec;color:#666666;padding:0 10px;display:inline-block;height:40px;line-height:40px;}
+        .file-upload .file-select.file-select-disabled:hover .file-select-name{line-height:40px;display:inline-block;padding:0 10px;}
+    </style>
+{{end}}
+{{define "content"}}
+    <div id="file-upload" class="file-upload">
+        <div class="main">
+            <div class="alert alert-danger text-center d-none" id="error-messages"></div>
+            <div class="input">
+                <label class="inp-label-1">
+                    Enter bucket name:
+                    <input class="bucket-name-inp" id="bucketNameInput" type="text">
+                </label>
+                <label class="inp-label-1">
+                    Enter object key:
+                    <input class="d-none bucket-name-inp" id="objectKeyInput" type="text">
+                </label>
+            </div>
+
+            <a class="submit-button" href="javascript:void(0)" onclick="downloadFile()">
+                Download file!
+            </a>
+        </div>
+    </div>
+{{end}}
+
+{{define "js" }}
+    <script>
+        {{/* function to check bucket name*/}}
+        let bucketNameInput = document.getElementById("bucketNameInput");
+        let objectKeyInput = document.getElementById("objectKeyInput");
+
+        async function verifyBucketName() {
+          let bucketName = bucketNameInput.value;
+
+          const headers = new Headers();
+          headers.append("Content-Type", "application/json");
+          headers.append("Accept", "application/json");
+
+          let requestBody = {
+            method: 'post',
+            headers: headers,
+            body: JSON.stringify({
+              'bucketName': bucketName,
+            })
+          };
+
+          try {
+            const response = await fetch("/check-bucket-name", requestBody);
+            const data = await response.json();
+
+            if (data.error) {
+              alert(data.message);
+              return false;
+            } else {
+              alert(data.message);
+              objectKeyInput.classList.remove("d-none");
+              return true;
+            }
+          } catch (error) {
+            console.error(error);
+            return false;
+          }
+        }
+
+        async function downloadFile() {
+          let bucketName = bucketNameInput.value;
+          let objectKey = objectKeyInput.value;
+
+          if (await verifyBucketName()) {
+            let requestBody = {
+                  'bucketName': bucketName,
+                  'objectKey': objectKey,
+                };
+
+            const request = {
+              method: 'post',
+              body: JSON.stringify(requestBody)
+            };
+
+            try {
+              const response = await fetch("/download-file", request);
+              const data = await response.json();
+
+              if (data.error) {
+                alert(data.message);
+              } else {
+                alert(data.message);
+              }
+            } catch (error) {
+              console.error(error);
+            }
+          }
+        }
+
+    </script>
+{{end}}
+
