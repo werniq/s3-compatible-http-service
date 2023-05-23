@@ -33,3 +33,19 @@
  - `r.GET("/download-file", app.DownloadLastUploadedFileHandler)`: This route handles the GET request to "/download-file" and triggers the DownloadLastUploadedFileHandler function. It is responsible for rendering the page where users can download the last uploaded file from a specific bucket
  - `r.POST("/download-file", app.DownloadLastUploadedFilePostHandler)`: This route handles the POST request to "/download-file" and invokes the DownloadLastUploadedFilePostHandler function. It processes the user's request to download the last uploaded file from a bucket and generates the corresponding response.
  - `r.POST("/check-bucket-name", app.CheckBucketname)`: This route handles the POST request to "/check-bucket-name" and invokes the CheckBucketname function. It processes the user's request to check the validity and availability of a bucket name and generates the appropriate response.
+
+ <hr>
+ 
+## Using Postman:  
+![photo_2023-05-23_10-22-58](https://github.com/werniq/cubbit_tech_task/assets/73220736/63a22163-16be-424a-909d-cb0f9235f8b3)
+![photo_2023-05-23_10-23-04](https://github.com/werniq/cubbit_tech_task/assets/73220736/5e8bb3d0-308f-459d-ba49-d02fd99667c7)
+![photo_2023-05-23_10-23-07](https://github.com/werniq/cubbit_tech_task/assets/73220736/ebe34e1b-a44d-46d4-9549-4035ab542364)
+ 
+ <hr>
+
+## Using browser
+ ![photo_2023-05-23_10-22-41](https://github.com/werniq/cubbit_tech_task/assets/73220736/1ef1806f-54d7-4c9f-93b0-e4020d8daf9e)
+![photo_2023-05-23_10-22-49](https://github.com/werniq/cubbit_tech_task/assets/73220736/fd1e1798-42e7-44ca-a44c-3c3f01b4bf8f)
+![photo_2023-05-23_10-22-52](https://github.com/werniq/cubbit_tech_task/assets/73220736/cd13f11e-354d-435a-a1a9-9bc0f20ba283)
+![photo_2023-05-23_10-22-55](https://github.com/werniq/cubbit_tech_task/assets/73220736/275d0d58-6b02-4e44-a525-2e7662405911)
+![photo_2023-05-23_10-23-10](https://github.com/werniq/cubbit_tech_task/assets/73220736/20ae569a-e8f8-4216-b28a-099781a0f636)
