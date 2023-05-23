@@ -1,9 +1,10 @@
 # cubbit_tech_task
 # Firstly, I would like to thank you for such opportunity! I have really enjoyed while doing this project.
+<hr>
 
 ## I decided to do this task in unusual way. I have created it as Full-Stack web application.
  - To download it, run `git clone https://github.com/werniq/cubbit_tech_task/` </h2>
- - You can test it in two ways: either with graphic interaction, or just using tool like `Postman`
+ - You can test it in two ways: either with browser, or just using tool like `Postman`
 
 # Using Postman
 
