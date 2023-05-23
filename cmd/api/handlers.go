@@ -12,6 +12,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"strconv"
 )
 
 type BucketCreateRequest struct {
@@ -63,15 +64,15 @@ func (app *Application) CreateNewBucket(c *gin.Context) {
 		return
 	}
 
-	err = app.DB.VerifyBucketName(bucketName.BucketName)
-	if err != nil {
-		app.ErrorLogger.Printf("error verifying bucket name: %v\n", err)
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error":   true,
-			"message": fmt.Sprintf("error verifying bucket name: %v", err.Error()),
-		})
-		return
-	}
+	//err = app.DB.VerifyBucketName(bucketName.BucketName)
+	//if err != nil {
+	//	app.ErrorLogger.Printf("error verifying bucket name: %v\n", err)
+	//	c.JSON(http.StatusBadRequest, gin.H{
+	//		"error":   true,
+	//		"message": fmt.Sprintf("error verifying bucket name: %v", err.Error()),
+	//	})
+	//	return
+	//}
 
 	_, err = app.S3.CreateBucket(&s3.CreateBucketInput{
 		Bucket: aws.String(bucketName.BucketName),
@@ -92,15 +93,15 @@ func (app *Application) CreateNewBucket(c *gin.Context) {
 	c.Request.Header.Set("Content-Type", "application/json")
 	c.Request.Header.Set("Accept", "application/json")
 
-	err = app.DB.StoreBucket(bucketName.BucketName)
-	if err != nil {
-		app.ErrorLogger.Printf("error storing bucket name: %v\n", err)
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error":   true,
-			"message": fmt.Sprintf("error storing bucket name: %v", err.Error()),
-		})
-		return
-	}
+	//err = app.DB.StoreBucket(bucketName.BucketName)
+	//if err != nil {
+	//	app.ErrorLogger.Printf("error storing bucket name: %v\n", err)
+	//	c.JSON(http.StatusBadRequest, gin.H{
+	//		"error":   true,
+	//		"message": fmt.Sprintf("error storing bucket name: %v", err.Error()),
+	//	})
+	//	return
+	//}
 
 	app.InfoLogger.Printf("successfully created bucket: %s\n", bucketName.BucketName)
 	c.JSON(200, gin.H{
@@ -176,15 +177,15 @@ func (app *Application) UploadFiles(c *gin.Context) {
 	// 	Body:   file,
 	// })
 
-	err = app.DB.CheckIfFileExists(bucketName, bucketUploadRequest.Filename)
-	if err != nil {
-		app.ErrorLogger.Println(err.Error())
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error":   true,
-			"message": err.Error(),
-		})
-		return
-	}
+	//err = app.DB.CheckIfFileExists(bucketName, bucketUploadRequest.Filename)
+	//if err != nil {
+	//	app.ErrorLogger.Println(err.Error())
+	//	c.JSON(http.StatusBadRequest, gin.H{
+	//		"error":   true,
+	//		"message": err.Error(),
+	//	})
+	//	return
+	//}
 
 	_, err = app.S3.PutObject(&s3.PutObjectInput{
 		Bucket: aws.String(bucketName),
@@ -203,15 +204,15 @@ func (app *Application) UploadFiles(c *gin.Context) {
 
 	// till here
 
-	err = app.DB.StoreFiles(bucketName, bucketUploadRequest.Filename)
-	if err != nil {
-		app.ErrorLogger.Printf("error storing file name: %v\n", err)
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error":   true,
-			"message": fmt.Sprintf("error storing file name: %v", err.Error()),
-		})
-		return
-	}
+	//err = app.DB.StoreFiles(bucketName, bucketUploadRequest.Filename)
+	//if err != nil {
+	//	app.ErrorLogger.Printf("error storing file name: %v\n", err)
+	//	c.JSON(http.StatusBadRequest, gin.H{
+	//		"error":   true,
+	//		"message": fmt.Sprintf("error storing file name: %v", err.Error()),
+	//	})
+	//	return
+	//}
 
 	app.InfoLogger.Printf("successfully uploaded file %s to bucket %s\n", filepath.Base(bucketUploadRequest.Filename), bucketName)
 	c.JSON(http.StatusOK, gin.H{
@@ -224,10 +225,64 @@ func (app *Application) ListFiles(c *gin.Context) {
 	var payload struct {
 		BucketName string `json:"bucketName"`
 	}
+
+	var parameters struct {
+		Marker  *string `json:"marker"`
+		MaxKeys *int64  `json:"max-keys"`
+		Prefix  *string `json:"prefix"`
+	}
 	payload.BucketName = c.Param("bucket-name")
+	marker := c.Request.URL.Query().Get("marker")
+	mk := c.Request.URL.Query().Get("max-keys")
+	pr := c.Request.URL.Query().Get("prefix")
+
+	parameters.Marker = &marker
+
+	var maxKeys int
+	var err error
+
+	if mk != "" {
+		maxKeys, err = strconv.Atoi(mk)
+		if err != nil {
+			app.ErrorLogger.Printf("error converting maxKeys to int: %v\n", err)
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error":   true,
+				"message": fmt.Sprintf("error converting maxKeys to int: %v", err.Error()),
+			})
+			return
+		}
+	}
+
+	parameters.MaxKeys = aws.Int64(int64(maxKeys))
+	parameters.Prefix = &pr
+
+	//err := c.ShouldBindJSON(&parameters)
+	//if err != nil {
+	//	app.ErrorLogger.Printf("error binding parameters request data: %v\n", err)
+	//	c.JSON(http.StatusBadRequest, gin.H{
+	//		"error":   true,
+	//		"message": fmt.Sprintf("error binding request data: %v", err.Error()),
+	//	})
+	//	return
+	//}
+
+	//if *parameters.MaxKeys == "" {
+	//	maxKeys, err = strconv.Atoi(*parameters.MaxKeys)
+	//	if err != nil {
+	//		app.ErrorLogger.Printf("error converting maxKeys to int: %v\n", err)
+	//		c.JSON(http.StatusBadRequest, gin.H{
+	//			"error":   true,
+	//			"message": fmt.Sprintf("error converting maxKeys to int: %v", err.Error()),
+	//		})
+	//		return
+	//	}
+	//}
 
 	out, err := app.S3.ListObjects(&s3.ListObjectsInput{
-		Bucket: aws.String(payload.BucketName),
+		Bucket:  aws.String(payload.BucketName),
+		Marker:  parameters.Marker,
+		MaxKeys: aws.Int64(int64(maxKeys)),
+		Prefix:  parameters.Prefix,
 	})
 
 	if err != nil {

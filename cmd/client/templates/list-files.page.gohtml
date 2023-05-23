@@ -96,17 +96,35 @@
                     Enter bucket name:
                     <input class="bucket-name-inp" id="bucketNameInput" type="text">
                 </label>
+{{/*               prefixInput
+                    maxKeysInput
+                    markerInput     */}}
+                <h2>Parameters!</h2>
+                <label class="inp-label-1">
+                    Enter prefix input:
+                    <input class="bucket-name-inp" id="prefixInput" type="text">
+                </label>
+
+                <label class="inp-label-1">
+                    Enter max keys quantity:
+                    <input class="bucket-name-inp" id="maxKeysInput" type="number">
+                </label>
+
+                <label class="inp-label-1">
+                    Enter marker input:
+                    <input class="bucket-name-inp" id="markerInput" type="text">
+                </label>
+
 
                 <a class="submit-button" href="javascript:void(0)" onclick="verifyBucketName()">
-                    Submit
+                  Submit
                 </a>
             </div>
 
-
             <div id="upload-files" class="d-none file-select d-none">
-                <a class="submit-button" href="javascript:void(0)" onclick="listFiles()">
-                    List files!
-                </a>
+              <a class="submit-button" href="javascript:void(0)" onclick="listFiles()">
+                List files!
+              </a>
             </div>
 
         </div>
@@ -120,6 +138,10 @@
     <script>
         {{/* function to check bucket name*/}}
         let bucketNameInput = document.getElementById("bucketNameInput");
+        let prefixInput = document.getElementById("prefixInput");
+        let maxKeysInput = document.getElementById("maxKeysInput");
+        let markerInput = document.getElementById("markerInput");
+
         let divUplFilese = document.getElementById("upload-files");
         let uplFiles = document.getElementById("chooseFile");
 
@@ -158,13 +180,19 @@
 
         async function listFiles() {
           let bucketName = bucketNameInput.value;
+          let prefix = prefixInput.value;
+          let maxKeys = maxKeysInput.value;
+          let marker = markerInput.value;
 
           if (await verifyBucketName()) {
             const request = {
               method: 'post',
               body: JSON.stringify(
                 {
-                    'bucketName': bucketName,
+                  'bucketName': bucketName,
+                  'prefix': prefix,
+                  'maxKeys': maxKeys.toString(),
+                  'marker': marker
                 }
               )
             };

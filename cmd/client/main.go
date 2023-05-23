@@ -28,12 +28,12 @@ type Application struct {
 func main() {
 	cfg := config{
 		port: 4000,
-		api:  "http://localhost:8080",
+		api:  "http://localhost:4001",
 		env:  "development",
 		db: struct {
 			dsn string
 		}{
-			dsn: "root:root@tcp(localhost:3306)/cubbit?parseTime=true",
+			dsn: "root:root@tcp(localhost:5432)/s3?parseTime=true",
 		},
 	}
 
@@ -41,7 +41,7 @@ func main() {
 	app.infoLog = log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime|log.Lshortfile)
 	app.errorLog = log.New(os.Stdout, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
 
-	app.infoLog.Println("Starting server on port 8080")
+	app.infoLog.Println("Starting server on port 4000")
 	r := gin.Default()
 
 	tp := make(map[string]*template.Template)
@@ -49,9 +49,9 @@ func main() {
 
 	app.ConfigureClientRoutes(r)
 
-	app.infoLog.Printf("Starting DEVELOPMENT server on port %d", app.cfg.port)
 	if err := r.Run(":4000"); err != nil {
-		app.errorLog.Println("Error starting server on port 8080")
+		app.errorLog.Println("Error starting server on port 4001")
 	}
 
+	app.infoLog.Printf("Starting DEVELOPMENT server on port %d", app.cfg.port)
 }

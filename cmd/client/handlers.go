@@ -310,7 +310,10 @@ func (app *Application) UploadFilesPostHandler(c *gin.Context) {
 
 func (app *Application) ListFilesPostHandler(c *gin.Context) {
 	var payload struct {
-		BucketName string `json:"bucketName"`
+		BucketName string  `json:"bucketName"`
+		Prefix     *string `json:"prefix"`
+		MaxKeys    *string `json:"maxKeys"`
+		Marker     *string `json:"marker"`
 	}
 
 	err := c.ShouldBindJSON(&payload)
@@ -322,8 +325,27 @@ func (app *Application) ListFilesPostHandler(c *gin.Context) {
 		})
 		return
 	}
+	uri := "http://localhost:4001/buckets/" + payload.BucketName + "/files"
 
-	req, _ := http.NewRequest("GET", "http://localhost:4001/buckets/"+payload.BucketName+"/files", nil)
+	if *payload.Prefix != "" {
+		uri += "?prefix=" + *payload.Prefix
+	}
+	if *payload.MaxKeys != "" && *payload.Prefix != "" {
+		//uri += "&max-keys=" + strconv.Itoa(*payload.MaxKeys)
+		uri += "&max-keys=" + *payload.MaxKeys
+		//} else if *payload.Prefix == "" && *payload.MaxKeys != 0 {
+	} else if *payload.Prefix == "" && *payload.MaxKeys != "" {
+		uri += "?max-keys=" + *payload.MaxKeys
+		//uri += "?max-keys=" + strconv.Itoa(*payload.MaxKeys)
+	}
+
+	if *payload.Marker != "" && *payload.Prefix != "" {
+		uri += "&marker=" + *payload.Marker
+	} else if *payload.Prefix == "" && *payload.Marker != "" {
+		uri += "?marker=" + *payload.Marker
+	}
+
+	req, _ := http.NewRequest("GET", uri, nil)
 
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("Accept", "application/json")

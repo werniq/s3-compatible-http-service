@@ -1,15 +1,12 @@
 package main
 
 import (
-	"cubbit_interview/internal/driver"
 	"cubbit_interview/internal/models"
-	"database/sql"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
 	"log"
 	"os"
 )
@@ -31,23 +28,29 @@ var (
 
 // NewApplication creates a new Application instance, which is used to
 // configure the routes and handlers, and most important - run application
-func NewApplication(db *sql.DB, s *session.Session, sthr *s3.S3) *Application {
+func NewApplication(s *session.Session, sthr *s3.S3) *Application {
 	return &Application{
-		DB:          &models.DatabaseModel{DB: db},
 		ErrorLogger: log.New(os.Stdout, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile),
 		InfoLogger:  log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime|log.Lshortfile),
 		AwsSession:  s,
 		S3:          sthr,
-		Endpoint:    "http://localhost:8080",
+		Endpoint:    "http://localhost:4001",
 	}
 }
 
 func main() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Printf("Error loading .env file: %v\n", err)
-		return
-	}
+	// in terms of TODO
+	// this project will look like this:
+	// first, set up development environment. this includes getting appropriate aws keys, and getting go dependencies
+	// secondly, set up the server. this includes setting up the routes, and setting up the handlers
+	// thirdly, set up the client. this includes setting up the routes, and setting up the handlers
+	// looks pretty straightforward.
+
+	// i decided not to use database, because it is not necessary to.
+	// it only needed to store the bucket names, and the files in the buckets.
+	// however if you try to create bucket or upload file, which already exists, it will throw an error.
+
+	// i provided description of the project in the README.md file.
 
 	creds := credentials.NewStaticCredentials(aws_access_key, aws_access_secret_key, "")
 
@@ -56,16 +59,14 @@ func main() {
 		Credentials: creds,
 		Endpoint:    aws.String("https://s3.eu-central-1.amazonaws.com"),
 	})
-
-	svc := s3.New(s)
-
-	db, err := driver.OpenDb()
 	if err != nil {
-		log.Printf("Error opening database: %v\n", err)
+		log.Printf("Error creating session: %v\n", err)
 		return
 	}
 
-	app := NewApplication(db, s, svc)
+	svc := s3.New(s)
+
+	app := NewApplication(s, svc)
 
 	r := gin.Default()
 
