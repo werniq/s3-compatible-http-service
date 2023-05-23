@@ -9,6 +9,7 @@
 # Using Postman
 
 <h3> Please, run <b>`go run cmd/api`</b> and feel free to test. </h3>
+<h3> Path: <b>http://localhost:4001/</b> </h3>
 
 - `r.PUT("/buckets", app.CreateNewBucket)`: This route is used to create a new bucket. When a PUT request is made to "/buckets", the CreateNewBucket handler function is executed. It is responsible for creating a new bucket in the S3-compatible service. 
 - `r.POST("/buckets/:bucket-name/files", app.UploadFiles)`: This route allows uploading files to a specific bucket. When a POST request is made to "/buckets/:bucket-name/files", the UploadFiles handler function is invoked. It handles the task of accepting the uploaded file and saving it to the specified bucket.
@@ -21,6 +22,7 @@
 # Using browser ( preferable )
 <h3> Run `go run cmd/api`. Open another terminal, and run `go run cmd/client`</h3>
 <h4> There is a navbar, so I hope you won't get lost <3 </h4>
+ <h3> Path: <b>`http://localhost:4000/`</b> </h3>
  
 
  - `r.GET("/", app.HomeHandler)`: This route handles the GET request to the root URL ("/") and invokes the HomeHandler function. It is responsible for rendering the home page of the application.
