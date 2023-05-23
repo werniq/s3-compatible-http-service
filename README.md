@@ -38,6 +38,24 @@
 
  <hr>
  
+ # Running
+ <h1>To run it using Docker: </h1>
+ 
+   - `docker build -t image-name -f .\client.Dockerfile . ` 
+   - `docker run -p 4001:4001 image-name `  
+   - After that, you can use Postman (or any another tool for making requests), and play with it
+ 
+ # Using browser
+ <h1> To run and play it with browser </h1>
+  
+- I kindly ask you to use 
+  - 1. `cd .\cubbit_tech_task\` 
+  - 2. `go run cmd/api` 
+  - 3. `go run cmd/client`
+ 
+ 
+## Using docker it is hard to configure them on one host.. Firslty run client, change urls in code, run using those port.. A lot of things. </li>
+ 
 ## Using Postman:  
 ![photo_2023-05-23_10-22-58](https://github.com/werniq/cubbit_tech_task/assets/73220736/63a22163-16be-424a-909d-cb0f9235f8b3)
 ![photo_2023-05-23_10-23-04](https://github.com/werniq/cubbit_tech_task/assets/73220736/5e8bb3d0-308f-459d-ba49-d02fd99667c7)
