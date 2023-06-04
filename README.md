@@ -1,5 +1,4 @@
 # S3 Compatible HTTP Service
-# Firstly, I would like to thank you for such opportunity! I have really enjoyed while doing this project.
 <hr>
 
 ## I decided to do this task in unusual way. I have created it as Full-Stack web application.
